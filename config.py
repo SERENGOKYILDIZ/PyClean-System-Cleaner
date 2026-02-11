@@ -1,8 +1,21 @@
 # Configuration Constants
 
 APP_NAME = "PyClean"
-VERSION = "1.1"
-WINDOW_SIZE = "1000x700"
+VERSION = "1.1.2"
+WINDOW_WIDTH = 500
+WINDOW_HEIGHT = 720
 THEME_COLOR = "blue"  # CustomTkinter theme color (blue, dark-blue, green)
 APPEARANCE_MODE = "Dark" # System, Dark, Light
-LOG_FILENAME = "cleaning_log.txt"
+
+# Colors
+COLOR_BG_MAIN = "#1a1a1a"
+COLOR_CARD = "#2b2b2b"
+COLOR_ACCENT = "#3B8ED0"     
+COLOR_NEON_BLUE = "#33C9FF"  
+COLOR_USAGE_HIGHLIGHT = "#00E5FF" 
+COLOR_SUCCESS = "#2CC985"
+COLOR_WARNING = "#f1c40f"
+COLOR_ERROR = "#e74c3c"
+COLOR_TEXT_MAIN = "#FFFFFF"
+COLOR_TEXT_SEC = "#A0A0A0"
+COLOR_TEXT_LABEL = "#909090"
