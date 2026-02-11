@@ -1,0 +1,24 @@
+# Virtual Environments
+venv/
+env/
+.venv/
+.env
+
+# Python compilation artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE Settings
+.vscode/
+.idea/
+*.swp
+
+# Build artifacts
+build/
+dist/
+*.spec
+
+# Logs
+*.log
