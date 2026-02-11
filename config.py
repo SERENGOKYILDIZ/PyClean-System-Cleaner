@@ -1,7 +1,7 @@
 # Configuration Constants
 
 APP_NAME = "PyClean"
-VERSION = "1.1.5"
+VERSION = "1.1.6"
 DEBUG = 0 # 0=User (Silent), 1=Dev (Logging enabled)
 WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 720
