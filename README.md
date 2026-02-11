@@ -1,24 +1,33 @@
-# PyClean - System Cleaner
+# PyClean - System Cleaner & Optimizer
 
-**PyClean** is a modern, high-performance system cleaning utility for Windows. Built with Python and CustomTkinter, it features a premium dark UI, configurable cleaning targets, and robust file operations to reclaim disk space safely and effectively.
+**PyClean** is a modern, high-performance system maintenance utility for Windows. Built with Python and CustomTkinter, it combines a powerful cleaner with a **pro-grade system monitor** and **game booster** in a sleek, compact interface.
 
 ## ✨ Key Features
 
-- **Premium Dark UI**:
-  - Sleek, modern interface with a deep dark theme (`#1a1a1a`).
-  - Card-style layout for cleaning targets.
-  - Real-time animated progress bar and status indicators.
-- **Configurable Targets**:
-  - Fully customizable via `targets.txt`.
-  - Supports environment variables (e.g., `%TEMP%`, `%USERPROFILE%`).
-  - Automatically creates a default configuration if none exists.
-- **Robust Cleaning Engine**:
-  - **Smart Deletion**: Handles read-only files and permission errors automatically.
-  - **Safe Skipping**: Gracefully skips locked or in-use system files without crashing.
-  - **Deep Clean**: Targets Temp, Prefetch, Recent Items, Recycle Bin, and more.
-- **Auto-Elevation**: Automatically restarts with Administrator privileges to ensure full access to restricted system folders (like `Prefetch`).
-- **No Console Mode**: Supports silent background execution (rename to `.pyw`).
-- **Detailed Reporting**: Displays total disk space recovered in MB upon completion.
+### 🧹 System Cleaner
+- **Deep Cleaning**: Targets Temp, Prefetch, Recent Items, Recycle Bin, and custom paths.
+- **Smart Deletion**: Handles read-only files and permission errors automatically.
+- **Configurable Targets**: Fully customizable via `targets.txt` (supports environment variables).
+- **Real-Time Status**: Animated progress indicators for each cleaning target.
+
+### 📊 Professional Hardware Monitor
+- **Detailed Specs**: Displays precise model names for CPU, GPU, Motherboard, and Disk (Physical Model).
+- **Live Stats**: Read **VRAM Usage**, CPU Clock Speed, and GPU Load in real-time.
+- **Click-to-Copy**: Click any hardware name to instantly copy it to your clipboard.
+- **Intelligent Detection**: Uses PowerShell PnP and WMI for accuracy (no "N/A" errors).
+
+### 🎮 Game Mode
+- **Performance Boost**: Temporarily stops non-essential background services (SysMain, DiagTrack, etc.) to free up resources.
+- **One-Click Toggle**: Switch between Gaming and Standard modes instantly.
+
+### 🚀 Performance Hub
+- **RAM & CPU Gauge**: Live percentage monitoring.
+- **Quick Boost**: Instantly flush DNS, clear clipboard, and optimize RAM working sets with one click.
+
+### 🎨 Premium UI
+- **Compact Design**: Minimalist 500x720 window with a deep dark theme (`#1a1a1a`).
+- **Neon Accents**: Bright blue highlights for critical live data.
+- **Auto-Elevation**: Automatically restarts with Admin privileges for full system access.
 
 ## 🚀 Installation & Usage
 
@@ -37,25 +46,19 @@
    ```bash
    python main.py
    ```
-   > **Pro Tip:** Rename `main.py` to `main.pyw` to hide the command console window completely!
+   > **Pro Tip:** Rename `main.py` to `main.pyw` to hide the console window!
 
 ## ⚙️ Configuration
 
 ### Customizing Targets (`targets.txt`)
-The application reads cleaning paths from `targets.txt` in the same directory. You can add or remove paths as needed.
-**Example:**
-```text
-%TEMP%
-C:\Windows\Prefetch
-%USERPROFILE%\AppData\Local\Google\Chrome\User Data\Default\Cache
-```
+Add or remove paths in `targets.txt`. Supports `%TEMP%`, `%USERPROFILE%`, etc.
 
 ### App Settings (`config.py`)
-Modify `config.py` to change the application name, version, window size, or theme colors.
+Modify `config.py` to change the application name, version (`v1.1`), window size, or theme colors.
 
 ## ⚠️ Disclaimer
 
-This software deletes files from your system. While it is designed to target temporary and cache directories, the developer is not responsible for any unintended data loss. **Always review your `targets.txt` before running.**
+This software performs file deletion and system service modifications. The developer is not responsible for any unintended data loss. **Always review your `targets.txt`.**
 
 ## 📄 License
 
