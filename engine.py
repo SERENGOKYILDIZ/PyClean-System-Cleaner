@@ -4,38 +4,119 @@ import subprocess
 import threading
 import stat
 
+import json
+
 class CleanManager:
     def __init__(self):
         self.running = False
         self.default_targets = [
             r"%TEMP%",
             r"C:\Windows\Prefetch",
-            r"%USERPROFILE%\AppData\Local\Temp",
+            r"C:\Windows\Temp",
+            r"C:\Windows\SoftwareDistribution\Download",
+            r"C:\Windows\System32\spool\PRINTERS",
+            r"%USERPROFILE%\AppData\Local\Microsoft\Windows\INetCache",
+            r"%USERPROFILE%\AppData\Local\Microsoft\Windows\INetCookies",
+            r"%APPDATA%\Microsoft\Windows\Recent",
+            r"C:\Windows\Minidump",
+            r"C:\Windows\Logs\CBS",
+            r"C:\Windows\Logs\DISM",
+            r"C:\Windows\Logs\WindowsUpdate",
+            r"%ProgramData%\Microsoft\Windows\WER\ReportArchive",
+            r"%ProgramData%\Microsoft\Windows\WER\ReportQueue",
+            r"%USERPROFILE%\AppData\Local\Microsoft\Windows\WER\ReportArchive",
+            r"%USERPROFILE%\AppData\Local\Microsoft\Windows\WER\ReportQueue",
+            r"%USERPROFILE%\AppData\Local\D3DSCache",
+            r"%USERPROFILE%\AppData\Local\Google\Chrome\User Data\Default\Cache",
+            r"%USERPROFILE%\AppData\Local\Microsoft\Edge\User Data\Default\Cache",
         ]
-        self.config_file = "targets.txt"
         
-    def load_targets(self):
-        targets = []
-        if not os.path.exists(self.config_file):
-            with open(self.config_file, "w") as f:
-                f.write("\n".join(self.default_targets))
+        # Setup AppData persistence
+        appdata = os.getenv('LOCALAPPDATA')
+        self.config_dir = os.path.join(appdata, "PyClean")
+        self.config_file = os.path.join(self.config_dir, "settings.json")
         
-        with open(self.config_file, "r") as f:
-            for line in f:
-                path = os.path.expandvars(line.strip())
-                if path and os.path.exists(path):
-                    targets.append(path)
-        return targets
+        self.raw_targets = []   # Stores %VAR% paths for UI
+        self.target_dirs = []   # Stores C:\Expanded paths for Cleaning
+        
+        self.load_settings()
 
-    def start_cleaning(self, update_callback, complete_callback, target_status_callback):
+    def load_settings(self):
+        # 1. Create dir if missing
+        if not os.path.exists(self.config_dir):
+            os.makedirs(self.config_dir, exist_ok=True)
+            
+        # 2. Check file
+        if not os.path.exists(self.config_file):
+            # Load defaults and save them
+            self.raw_targets = list(self.default_targets)
+            self.save_settings()
+        else:
+            # Read file
+            try:
+                with open(self.config_file, "r") as f:
+                    data = json.load(f)
+                    self.raw_targets = data.get("targets", self.default_targets)
+            except:
+                self.raw_targets = list(self.default_targets)
+        
+        # Update expanded paths for engine use
+        self._refresh_expanded_paths()
+        return self.target_dirs
+
+    def save_settings(self):
+        try:
+            data = {"targets": self.raw_targets}
+            with open(self.config_file, "w") as f:
+                json.dump(data, f, indent=4)
+        except: pass
+
+    def _refresh_expanded_paths(self):
+        """Expands raw targets into valid system paths for cleaning."""
+        self.target_dirs.clear()
+        seen = set()
+        
+        for t in self.raw_targets:
+            t = t.strip()
+            if not t: continue
+            
+            expanded = os.path.expandvars(t)
+            # Only add if it exists and hasn't been added
+            if os.path.exists(expanded) and expanded not in seen:
+                self.target_dirs.append(expanded)
+                seen.add(expanded)
+
+    def update_paths(self, new_raw_list):
+        """
+        Receives raw list from UI (with %VARS%), updates settings, and expands.
+        """
+        if new_raw_list is None: new_raw_list = []
+        
+        # Deduplicate raw list while preserving order
+        clean_raw = []
+        seen_raw = set()
+        for t in new_raw_list:
+            t = t.strip()
+            if t and t not in seen_raw:
+                clean_raw.append(t)
+                seen_raw.add(t)
+        
+        self.raw_targets = clean_raw
+        self.save_settings()
+        self._refresh_expanded_paths()
+        
+        return self.target_dirs
+
+    def start_cleaning(self, update_callback, complete_callback, target_status_callback, custom_targets=None):
         self.running = True
-        threading.Thread(target=self._clean_process, args=(update_callback, complete_callback, target_status_callback), daemon=True).start()
+        threading.Thread(target=self._clean_process, args=(update_callback, complete_callback, target_status_callback, custom_targets), daemon=True).start()
 
     def stop_cleaning(self):
         self.running = False
 
-    def _clean_process(self, update_callback, complete_callback, target_status_callback):
-        targets = self.load_targets()
+    def _clean_process(self, update_callback, complete_callback, target_status_callback, custom_targets=None):
+        targets = self.target_dirs if custom_targets is None else [os.path.expandvars(t) for t in custom_targets if t.strip()]
+             
         total_freed = 0
         deleted_count = 0
         errors = 0
@@ -46,7 +127,6 @@ class CleanManager:
             target_status_callback(target, 'running', 'Scanning...')
             
             try:
-                # Calculate size before deletion (approx)
                 current_freed = 0
                 if os.path.isdir(target):
                     for root, dirs, files in os.walk(target):
@@ -56,13 +136,8 @@ class CleanManager:
                                 current_freed += os.path.getsize(fp)
                             except: pass
                             
-                    # Actual Deletion
                     shutil.rmtree(target, onerror=self._remove_readonly)
-                    # Re-create the folder if it's a system folder we just emptied
-                    try:
-                        os.makedirs(target, exist_ok=True)
-                    except: pass
-                    
+                    os.makedirs(target, exist_ok=True)
                     target_status_callback(target, 'done', 'Cleaned')
                 elif os.path.isfile(target):
                     current_freed = os.path.getsize(target)
@@ -72,7 +147,7 @@ class CleanManager:
                 total_freed += current_freed
                 deleted_count += 1
                 
-            except Exception as e:
+            except Exception:
                 errors += 1
                 target_status_callback(target, 'error', 'Error')
                 

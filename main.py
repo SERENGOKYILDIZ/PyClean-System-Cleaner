@@ -13,32 +13,46 @@ from monitor import HardwareMonitor
 from ui import AppUI
 
 # --- SYSTEM LOGGING SETUP ---
-# Ensure log file is in the same directory as the executable/script
-LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app_log.txt')
+if DEBUG:
+    # Ensure log file is in the same directory as the executable/script
+    if getattr(sys, 'frozen', False):
+        # Running as compiled exe
+        application_path = os.path.dirname(sys.executable)
+    else:
+        # Running as script
+        application_path = os.path.dirname(os.path.abspath(__file__))
 
-# Configure logging
-logging.basicConfig(
-    filename=LOG_FILE,
-    level=logging.DEBUG,
-    format='[%(asctime)s] %(levelname)s: %(message)s',
-    datefmt='%Y-%m-%d %H:%M',
-    filemode='a'  # Append mode
-)
+    LOG_FILE = os.path.join(application_path, 'app_log.txt')
 
-# Redirect stdout and stderr to the logging system
-class StreamToLogger:
-    def __init__(self, level):
-        self.level = level
-    
-    def write(self, message):
-        if message.strip():  # Avoid logging empty lines
-            logging.log(self.level, message.strip())
-    
-    def flush(self):
-        pass
+    # Configure logging
+    logging.basicConfig(
+        filename=LOG_FILE,
+        level=logging.DEBUG,
+        format='[%(asctime)s] %(levelname)s: %(message)s',
+        datefmt='%Y-%m-%d %H:%M',
+        filemode='a'  # Append mode
+    )
 
-sys.stdout = StreamToLogger(logging.INFO)
-sys.stderr = StreamToLogger(logging.ERROR)
+    # Redirect stdout and stderr to the logging system
+    class StreamToLogger:
+        def __init__(self, level):
+            self.level = level
+        
+        def write(self, message):
+            if message.strip():  # Avoid logging empty lines
+                logging.log(self.level, message.strip())
+        
+        def flush(self):
+            pass
+
+    sys.stdout = StreamToLogger(logging.INFO)
+    sys.stderr = StreamToLogger(logging.ERROR)
+else:
+    # Silent mode: No logging, no file creation
+    logging.basicConfig(level=logging.CRITICAL + 1) # Disable logging called by libraries
+    # Optionally suppress print statements if any exist
+    sys.stdout = open(os.devnull, 'w')
+    sys.stderr = open(os.devnull, 'w')
 
 def is_admin():
     try:

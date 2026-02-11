@@ -3,3 +3,4 @@ winshell
 pywin32
 pillow
 psutil
+pyinstaller

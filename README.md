@@ -2,6 +2,14 @@
 
 **PyClean** is a modern, high-performance system maintenance utility for Windows. Built with Python and CustomTkinter, it combines a powerful cleaner with a **pro-grade system monitor** and **game booster** in a sleek, compact interface.
 
+## 📥 Downloads
+
+> **[Download PyClean v1.1.5 (Standalone EXE)](https://github.com/SERENGOKYILDIZ/PyClean-System-Cleaner/releases/download/v1.1.5/PyClean_v1.1.5.exe)**
+> 
+> *No installation required. Single portable executable.*
+
+---
+
 ## ✨ Key Features
 
 ### 🧹 System Cleaner
