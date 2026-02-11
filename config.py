@@ -1,7 +1,7 @@
 # Configuration Constants
 
 APP_NAME = "PyClean"
-VERSION = "1.1.2"
+VERSION = "1.1.3"
 WINDOW_WIDTH = 500
 WINDOW_HEIGHT = 720
 THEME_COLOR = "blue"  # CustomTkinter theme color (blue, dark-blue, green)

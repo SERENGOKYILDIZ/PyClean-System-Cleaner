@@ -22,3 +22,4 @@ dist/
 
 # Logs
 *.log
+app_log.txt
