@@ -56,8 +56,12 @@ def main():
             # Yönetici olarak yeniden başlat
             script = os.path.abspath(sys.argv[0])
             params = ' '.join([f'"{arg}"' for arg in sys.argv])
+            
+            # Use pythonw.exe to prevent console window
+            executable = sys.executable.replace("python.exe", "pythonw.exe")
+            
             # 'runas' parametresi UAC penceresini tetikler
-            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{script}"', None, 1)
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", executable, f'"{script}"', None, 1)
             sys.exit()
 
         # Admin ise buradan devam eder
